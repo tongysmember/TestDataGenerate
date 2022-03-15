@@ -45,6 +45,7 @@ def GenDataContextBySpec():
     ExportContext = ExportContext2
 
 ############################# Column Data Column Context Generate #############################
+
 def GenByteintData(SrcRow)->list:
     print('GenByteintData')
     return []
@@ -52,41 +53,6 @@ def GenByteintData(SrcRow)->list:
 def GenSmallintData(SrcRow)->list:
     print('GenSmallintData')
     return []
-
-def GenBigintData(SrcRow)->list:
-    print('GenBigintData')
-    return []
-
-def GenNumericData(SrcRow)->list:
-    print('GenNumericData')
-    return []
-
-def GenFloatData(SrcRow)->list:
-    print('GenFloatData')
-    return []
-
-def GenCharData(SrcRow)->list:
-    print('GenCharData')
-    return []
-
-def GenTimeData(SrcRow)->list:
-    print('GenTimeData')
-    return []
-
-def GenTimestampData(SrcRow)->list:
-    print('GenTimestampData')
-    return []
-
-def GenVarcharData(SrcRow)->list:
-    reg = re.compile(r'varchar\((\d+)')
-    re_match = reg.findall(','.join(SrcRow))
-
-    for Varlength in re_match:
-        strRandomVarchar = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(int(Varlength)))
-        SrcRow = [Row.replace('varchar('+Varlength+')', strRandomVarchar ) for Row in SrcRow]
-
-    ConvertRow = SrcRow
-    return ConvertRow 
 
 def GenIntegerData(SrcRow)->list:
     reg = re.compile(r'integer\((\d+)')
@@ -98,9 +64,9 @@ def GenIntegerData(SrcRow)->list:
     ConvertRow = SrcRow
     return ConvertRow 
 
-def GenDateData(SrcRow)->list:
-    ConvertRow =  list(map(lambda x: str.replace(x, "date", str(datetime.datetime.now().strftime("%Y%m%d"))), SrcRow))
-    return ConvertRow 
+def GenBigintData(SrcRow)->list:
+    print('GenBigintData')
+    return []
 
 def GenDecimalData(SrcRow)->list:
     reg = re.compile(r'decimal\((\d+\,\d+)')
@@ -114,6 +80,41 @@ def GenDecimalData(SrcRow)->list:
 
     ConvertRow = SrcRow
     return ConvertRow 
+
+def GenNumericData(SrcRow)->list:
+    print('GenNumericData')
+    return []
+
+def GenFloatData(SrcRow)->list:
+    print('GenFloatData')
+    return []
+
+def GenCharData(SrcRow)->list:
+    print('GenCharData')
+    return []
+
+def GenVarcharData(SrcRow)->list:
+    reg = re.compile(r'varchar\((\d+)')
+    re_match = reg.findall(','.join(SrcRow))
+
+    for Varlength in re_match:
+        strRandomVarchar = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(int(Varlength)))
+        SrcRow = [Row.replace('varchar('+Varlength+')', strRandomVarchar ) for Row in SrcRow]
+
+    ConvertRow = SrcRow
+    return ConvertRow   
+
+def GenDateData(SrcRow)->list:
+    ConvertRow =  list(map(lambda x: str.replace(x, "date", str(datetime.datetime.now().strftime("%Y%m%d"))), SrcRow))
+    return ConvertRow   
+
+def GenTimeData(SrcRow)->list:
+    print('GenTimeData')
+    return []
+
+def GenTimestampData(SrcRow)->list:
+    print('GenTimestampData')
+    return []
 
 ############################# Column Data Column Context Generate #############################
 
