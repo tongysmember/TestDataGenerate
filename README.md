@@ -1,4 +1,4 @@
-# TestDataGenerate 測資程式
+# TestDataGenerate 測資產生程式
 
 ## 資料欄位參考
 
