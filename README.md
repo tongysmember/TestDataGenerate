@@ -37,3 +37,13 @@ https://www.tutorialspoint.com/teradata/teradata_data_types.htm
 - test: 增加測試 (when adding missing tests)。
 - chore: 建構程序或輔助工具的變動 (maintain)。
 - revert: 撤銷回覆先前的 commit 例如：revert: type(scope): subject (回覆版本：xxxx)。
+
+---
+
+# Ref:
+## Regex DDL Script
+1. https://stackoverflow.com/questions/54626068/python-regex-fetching-column-details-from-ddl 
+
+1. https://regex101.com/r/jcCBch/1/
+
+1. https://pythex.org/
