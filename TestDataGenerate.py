@@ -44,6 +44,39 @@ def GenDataContextBySpec():
 
     ExportContext = ExportContext2
 
+############################# Column Data Column Context Generate #############################
+def GenByteintData(SrcRow)->list:
+    print('GenByteintData')
+    return []
+
+def GenSmallintData(SrcRow)->list:
+    print('GenSmallintData')
+    return []
+
+def GenBigintData(SrcRow)->list:
+    print('GenBigintData')
+    return []
+
+def GenNumericData(SrcRow)->list:
+    print('GenNumericData')
+    return []
+
+def GenFloatData(SrcRow)->list:
+    print('GenFloatData')
+    return []
+
+def GenCharData(SrcRow)->list:
+    print('GenCharData')
+    return []
+
+def GenTimeData(SrcRow)->list:
+    print('GenTimeData')
+    return []
+
+def GenTimestampData(SrcRow)->list:
+    print('GenTimestampData')
+    return []
+
 def GenVarcharData(SrcRow)->list:
     reg = re.compile(r'varchar\((\d+)')
     re_match = reg.findall(','.join(SrcRow))
@@ -81,6 +114,8 @@ def GenDecimalData(SrcRow)->list:
 
     ConvertRow = SrcRow
     return ConvertRow 
+
+############################# Column Data Column Context Generate #############################
 
 def ExportFile():
     print('ExportFile')
