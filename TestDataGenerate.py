@@ -9,6 +9,7 @@ import re
 from decimal import *
 
 ExportPath     = './Generated/'
+DDLPath     = './DDL/Teradata.DDL'
 ExportFileName = datetime.datetime.now().strftime("%Y%m%d%H%M%S")+'.csv'
 
 global ExportContext
@@ -22,6 +23,30 @@ def ReadDDL2SpecData()->list:
     global SpecDataRowTemplate
 
     SpecDataRowTemplate=['varchar(10)','varchar(20)','integer(30)', 'date', 'decimal(18,4)', 'decimal(38,4)']
+    DDLcontents = None
+    with open(DDLPath) as f:
+        DDLcontents = f.read().upper()
+        #print(DDLcontents)
+    
+    SpecDataRowTemplate = DDLcontextRegex(DDLcontents)
+        
+
+
+def DDLcontextRegex(SrcDDLcontents)->list:
+    re_script = r"""\s* (?P<column_name>\w+)\s+ (?P<column_type>\w+) (?:     \(     (?P<column_size>[^()]+)     \) )? [, ]+ .*"""
+    reg = re.compile(re_script, re.VERBOSE | re.IGNORECASE)
+
+    re_match = reg.findall(SrcDDLcontents)
+    
+    for ColName, ColTyoe, ColLength in re_match:
+        #IntLen, FloatLen = Decimallength.split(',')
+        #strRandomDecimal = str(random.randint(0,int('9' * int(IntLen))))
+        #strRandomDecimal = strRandomDecimal[:int(FloatLen)*-1]+'.'+strRandomDecimal[int(FloatLen)*-1:]
+        #SrcRow = [Row.replace('decimal('+Decimallength+')', strRandomDecimal) for Row in SrcRow]
+        SrcRow = "Demo"
+    
+    return SrcRow
+
 
 def GenDatatable():
     print('GenDatatable')
