@@ -8,6 +8,9 @@ import random
 import re
 from decimal import *
 
+from collections import Iterable
+
+
 ExportPath     = './Generated/'
 DDLPath     = './DDL/Teradata.DDL'
 ExportFileName = datetime.datetime.now().strftime("%Y%m%d%H%M%S")+'.csv'
@@ -15,20 +18,39 @@ ExportFileName = datetime.datetime.now().strftime("%Y%m%d%H%M%S")+'.csv'
 global ExportContext
 global ExportFileRows
 global SpecDataRowTemplate
-ExportFileRows = 1000
+global SpecHeaderRowTemplate
+global SpecExportRowTemplate
+ExportFileRows = 10
+
+def flatten(lis):
+     for item in lis:
+         if isinstance(item, Iterable) and not isinstance(item, str):
+             for x in flatten(item):
+                 yield x
+         else:        
+             yield item
 
 
 def ReadDDL2SpecData()->list:
     print('ReadSpec')
     global SpecDataRowTemplate
-
-    SpecDataRowTemplate=['varchar(10)','varchar(20)','integer(30)', 'date', 'decimal(18,4)', 'decimal(38,4)']
+    global SpecHeaderRowTemplate
+    global SpecExportRowTemplate
+    #SpecDataRowTemplate=['varchar(10)','varchar(20)','integer(30)', 'date', 'decimal(18,4)', 'decimal(38,4)']
     DDLcontents = None
     with open(DDLPath) as f:
         DDLcontents = f.read().upper()
         #print(DDLcontents)
     
-    SpecDataRowTemplate = DDLcontextRegex(DDLcontents)
+    SpecHeaderRowTemplate, SpecDataRowTemplate = DDLcontextRegex(DDLcontents)
+    
+    SpecExportRowTemplate =  []
+    for row in SpecDataRowTemplate:
+        if (row[1] != ''):
+            SpecExportRowTemplate.append(row[0]+'('+row[1]+')')
+        else:
+            SpecExportRowTemplate.append(row[0])
+    
         
 
 
@@ -51,12 +73,14 @@ def DDLcontextRegex(SrcDDLcontents)->list:
 
     re_match = reg.findall(SrcDDLcontents)
     DDL_Context =[]
+    DDL_Header =[]
     for ColName, ColType, ColLength in re_match:
         if ColType in DataTypeList:
             #print('{0},{1},{2}'.format(ColName, ColType, ColLength))
-            DDL_Context.append([ColName, ColType, ColLength])
+            DDL_Context.append([ColType, ColLength])
+            DDL_Header.append([ColName])
     
-    return DDL_Context
+    return DDL_Header,DDL_Context
 
 
 def GenDatatable():
@@ -69,16 +93,28 @@ def GenDatatable():
 def GenDataContextBySpec():
     print('GenDataContextByDDL')
     global ExportContext
-    ExportContext2 = []    
+    global SpecExportRowTemplate
+    global SpecExportRowTemplate
+    SpecExportRowRandom = SpecExportRowTemplate
+    ExportContextGenData = []    
+    for _ in range(ExportFileRows):
+        for Row in SpecExportRowTemplate:
+            if 'VARCHAR' in Row:
+                SpecExportRowRandom = GenVarcharData(SpecExportRowRandom) 
+            if 'DATE' in Row:
+                SpecExportRowRandom = GenDateData(SpecExportRowRandom)
+            if 'INTEGER' in Row:
+                SpecExportRowRandom = GenIntegerData(SpecExportRowRandom)
+            if 'DECIMAL' in Row:
+                SpecExportRowRandom = GenDecimalData(SpecExportRowRandom)
+            if 'TIMESTAMP' in Row:
+                SpecExportRowRandom = GenTimestampData(SpecExportRowRandom)
+        ExportContextGenData.append(SpecExportRowRandom)
+        SpecExportRowRandom = SpecExportRowTemplate
+    
+    #ExportContextGenData.append(SpecExportRowTemplate)
 
-    for Row in ExportContext:
-        Row = GenVarcharData(Row)
-        Row = GenDateData(Row)
-        Row = GenIntegerData(Row)
-        Row = GenDecimalData(Row)
-        ExportContext2.append(Row)
-
-    ExportContext = ExportContext2
+    ExportContext = ExportContextGenData
 
 ############################# Column Data Column Context Generate #############################
 
@@ -91,7 +127,7 @@ def GenSmallintData(SrcRow)->list:
     return []
 
 def GenIntegerData(SrcRow)->list:
-    reg = re.compile(r'integer\((\d+)')
+    reg = re.compile(r'INTEGER\((\d+)')
     re_match = reg.findall(','.join(SrcRow))
     
     for Integerlength in re_match:
@@ -105,7 +141,7 @@ def GenBigintData(SrcRow)->list:
     return []
 
 def GenDecimalData(SrcRow)->list:
-    reg = re.compile(r'decimal\((\d+\,\d+)')
+    reg = re.compile(r'DECIMAL\((\d+\,\d+)')
     re_match = reg.findall(','.join(SrcRow))
     
     for Decimallength in re_match:
@@ -130,27 +166,34 @@ def GenCharData(SrcRow)->list:
     return []
 
 def GenVarcharData(SrcRow)->list:
-    reg = re.compile(r'varchar\((\d+)')
-    re_match = reg.findall(','.join(SrcRow))
+    #SrcRow = list(flatten(SrcRow))
+    reg = re.compile(r'VARCHAR\((\d+)')
+    re_match = reg.findall(','.join(list(flatten(SrcRow))))
+    #re_match = reg.findall(SrcRow)
 
     for Varlength in re_match:
         strRandomVarchar = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(int(Varlength)))
-        SrcRow = [Row.replace('varchar('+Varlength+')', strRandomVarchar ) for Row in SrcRow]
+        SrcRow = [Row.replace('VARCHAR('+Varlength+')', strRandomVarchar ) for Row in SrcRow]
 
     ConvertRow = SrcRow
     return ConvertRow   
 
 def GenDateData(SrcRow)->list:
-    ConvertRow =  list(map(lambda x: str.replace(x, "date", str(datetime.datetime.now().strftime("%Y%m%d"))), SrcRow))
+    #"%H%M%S"
+    ConvertRow =  list(map(lambda x: str.replace(x, "DATE", str((datetime.datetime.now()+ datetime.timedelta(days=int(random.choice(string.digits)))).strftime("%Y%m%d"))), SrcRow))
+
     return ConvertRow   
 
 def GenTimeData(SrcRow)->list:
-    print('GenTimeData')
-    return []
+    #HHMMSS.nnnnnn
+    ConvertRow =  list(map(lambda x: str.replace(x, "TIME", str((datetime.datetime.now()+ datetime.timedelta(days=int(random.choice(string.digits)))).strftime("%H%M%S")+'.'+random.choice(string.digits)*6)), SrcRow))
+
+    return ConvertRow
 
 def GenTimestampData(SrcRow)->list:
-    print('GenTimestampData')
-    return []
+    #YYMMDDHHMMSS.nnnnnn
+    ConvertRow =  list(map(lambda x: str.replace(x, "TIMESTAMP", str((datetime.datetime.now()+ datetime.timedelta(days=int(random.choice(string.digits)))).strftime("%Y%m%d%H%M%S")+'.'+random.choice(string.digits)*6)), SrcRow))
+    return ConvertRow
 
 ############################# Column Data Column Context Generate #############################
 
