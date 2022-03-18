@@ -33,19 +33,30 @@ def ReadDDL2SpecData()->list:
 
 
 def DDLcontextRegex(SrcDDLcontents)->list:
-    re_script = r"""\s* (?P<column_name>\w+)\s+ (?P<column_type>\w+) (?:     \(     (?P<column_size>[^()]+)     \) )? [, ]+ .*"""
+    re_script = r"""\s* (?P<column_name>\w+)\s+ (?P<column_type>\w+) (?:     \(     (?P<column_size>[^()]+)     \) )? [,) ]+ .*"""
+    DataTypeList = ['BYTEINT',
+                    'SMALLINT',
+                    'INTEGER',
+                    'BIGINT',
+                    'DECIMAL',
+                    'NUMERIC',
+                    'FLOAT',
+                    'CHAR',
+                    'VARCHAR',
+                    'DATE',
+                    'TIME',
+                    'TIMESTAMP']
+    # DataTypeList Upper Type
     reg = re.compile(re_script, re.VERBOSE | re.IGNORECASE)
 
     re_match = reg.findall(SrcDDLcontents)
+    DDL_Context =[]
+    for ColName, ColType, ColLength in re_match:
+        if ColType in DataTypeList:
+            #print('{0},{1},{2}'.format(ColName, ColType, ColLength))
+            DDL_Context.append([ColName, ColType, ColLength])
     
-    for ColName, ColTyoe, ColLength in re_match:
-        #IntLen, FloatLen = Decimallength.split(',')
-        #strRandomDecimal = str(random.randint(0,int('9' * int(IntLen))))
-        #strRandomDecimal = strRandomDecimal[:int(FloatLen)*-1]+'.'+strRandomDecimal[int(FloatLen)*-1:]
-        #SrcRow = [Row.replace('decimal('+Decimallength+')', strRandomDecimal) for Row in SrcRow]
-        SrcRow = "Demo"
-    
-    return SrcRow
+    return DDL_Context
 
 
 def GenDatatable():
