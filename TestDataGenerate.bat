@@ -1,27 +1,27 @@
 @echo off
-echo ´ú¸Õ¸ê®Æ²£¥Í¾¹
+echo ï¿½ï¿½ï¿½Õ¸ï¿½Æ²ï¿½ï¿½Í¾ï¿½
 echo ===============================================================
 
-set /p DdlPath=½Ð¿é¤J¨Ó·½DDL¸ô®|(DDL¸ê®Æ§¨):
+set /p DdlPath=ï¿½Ð¿ï¿½Jï¿½Ó·ï¿½DDLï¿½ï¿½ï¿½|(DDLï¿½ï¿½Æ§ï¿½):
 echo %DdlPath%
 
 IF EXIST %DdlPath% (
-  echo ÀÉ®×¦s¦b
+  echo ï¿½É®×¦sï¿½b
 ) ELSE (
-  echo ÀÉ®×¤£¦s¦b, ½Ð­«·s¿é¤J
+  echo ï¿½É®×¤ï¿½ï¿½sï¿½b, ï¿½Ð­ï¿½ï¿½sï¿½ï¿½J
 )
 
-set /p BoolHeader=¬O§_»Ý­nªíÀYHeader(Y, N):
+set /p BoolHeader=ï¿½Oï¿½_ï¿½Ý­nï¿½ï¿½ï¿½YHeader(Y, N):
 echo %BoolHeader%
 
-set /p BoolTailer=¬O§_»Ý­nªí§ÀTailer(Y, N):
+set /p BoolTailer=ï¿½Oï¿½_ï¿½Ý­nï¿½ï¿½ï¿½ï¿½Tailer(Y, N):
 echo %BoolTailer%
 
-set /p IntRows=¸ê®Æ²£¥Íµ§¼Æ(¥¿¾ã¼Æ):
+set /p IntRows=ï¿½ï¿½Æ²ï¿½ï¿½Íµï¿½ï¿½ï¿½(ï¿½ï¿½ï¿½ï¿½ï¿½):
 echo %IntRows%
 
-echo °õ¦æµ{¦¡ 
+echo ï¿½ï¿½ï¿½ï¿½{ï¿½ï¿½ 
 
-py -3.8 TestDataGenerate_class.py %BoolHeader% %BoolTailer% %IntRows%
+py -3.8 TestDataGenerate.py %BoolHeader% %BoolTailer% %IntRows%
 
 pause
