@@ -9,6 +9,7 @@ import re
 from decimal import *
 
 import GenDataType
+from DataTypeEnum import DataType
 import logging
 import os.path
 
@@ -47,18 +48,7 @@ def ReadDDL2SpecData()->list:
     
 def DDLcontextRegex(SrcDDLcontents)->list:
     re_script = r"""\s* (?P<column_name>\w+)\s+ (?P<column_type>\w+) (?:     \(     (?P<column_size>[^()]+)     \) )? [, \n ) ] """
-    DataTypeList = ['BYTEINT',
-                    'SMALLINT',
-                    'INTEGER',
-                    'BIGINT',
-                    'DECIMAL',
-                    'NUMERIC',
-                    'FLOAT',
-                    'CHAR',
-                    'VARCHAR',
-                    'DATE',
-                    'TIME',
-                    'TIMESTAMP']
+    DataTypeList = [EnumRow.name for EnumRow in DataType]
     # DataTypeList Upper Type
     reg = re.compile(re_script, re.VERBOSE | re.IGNORECASE)
 
@@ -89,34 +79,10 @@ def GenDataContextBySpec():
     ExportContextGenData = []    
 
     #GenDataObj = GenDataType()
-
+    
     for _ in range(ExportFileRows):
         for Col in SpecExportRowTemplate:
-            if 'VARCHAR' in Col:
-                #SpecExportRowRandom = GenVarcharData(SpecExportRowRandom) 
-                SpecExportRowRandom = GenDataType.GenVarcharData(SpecExportRowRandom)
-            if 'CHAR' in Col:
-                SpecExportRowRandom = GenDataType.GenCharData(SpecExportRowRandom) 
-            if 'DATE' in Col:
-                SpecExportRowRandom = GenDataType.GenDateData(SpecExportRowRandom)
-            if 'INTEGER' in Col:
-                SpecExportRowRandom = GenDataType.GenIntegerData(SpecExportRowRandom)
-            if 'SMALLINT' in Col:
-                SpecExportRowRandom = GenDataType.GenSmallintData(SpecExportRowRandom)
-            if 'BIGINT' in Col:
-                SpecExportRowRandom = GenDataType.GenBigintData(SpecExportRowRandom)
-            if 'DECIMAL' in Col:
-                SpecExportRowRandom = GenDataType.GenDecimalData(SpecExportRowRandom)
-            if 'NUMERIC' in Col:
-                SpecExportRowRandom = GenDataType.GenNumericData(SpecExportRowRandom)
-            if 'FLOAT' in Col:
-                SpecExportRowRandom = GenDataType.GenFloatData(SpecExportRowRandom)
-            if 'TIMESTAMP' in Col:
-                SpecExportRowRandom = GenDataType.GenTimestampData(SpecExportRowRandom)
-            if 'TIME' in Col:
-                SpecExportRowRandom = GenDataType.GenTimeData(SpecExportRowRandom)
-            if 'BYTEINT' in Col:
-                SpecExportRowRandom = GenDataType.GenByteintData(SpecExportRowRandom)
+            SpecExportRowRandom = GenDataType.GenDataType(Col.split('(')[0],SpecExportRowRandom)
 
         ExportContextGenData.append(SpecExportRowRandom)
         SpecExportRowRandom = SpecExportRowTemplate

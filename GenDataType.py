@@ -10,33 +10,30 @@ import re
 from DataTypeEnum import DataType
 
 def GenDataType(SrcDataType,SrcRow):
-
-    for Col in SrcRow:
-        if  'VARCHAR' == DataType[SrcDataType].name:
-            return GenVarcharData(SrcRow)
-        elif 'CHAR' == DataType[SrcDataType].name:
-            return GenCharData(SrcRow) 
-        elif 'DATE' == DataType[SrcDataType].name:
-            return GenDateData(SrcRow)
-        elif 'INTEGER' == DataType[SrcDataType].name:
-            return GenIntegerData(SrcRow)
-        elif 'SMALLINT' == DataType[SrcDataType].name:
-            return GenSmallintData(SrcRow)
-        elif 'BIGINT' == DataType[SrcDataType].name:
-            return GenBigintData(SrcRow)
-        elif 'DECIMAL' == DataType[SrcDataType].name:
-            return GenDecimalData(SrcRow)
-        elif 'NUMERIC' == DataType[SrcDataType].name:
-            return GenNumericData(SrcRow)
-        elif 'FLOAT' == DataType[SrcDataType].name:
-            return GenFloatData(SrcRow)
-        elif 'TIMESTAMP' == DataType[SrcDataType].name:
-            return GenTimestampData(SrcRow)
-        elif 'TIME' == DataType[SrcDataType].name:
-            return GenTimeData(SrcRow)
-        elif 'BYTEINT' == DataType[SrcDataType].name:
-            return GenByteintData(SrcRow)
-     
+    if  'VARCHAR' == DataType[SrcDataType].name:
+        return GenVarcharData(SrcRow)
+    elif 'CHAR' == DataType[SrcDataType].name:
+        return GenCharData(SrcRow) 
+    elif 'DATE' == DataType[SrcDataType].name:
+        return GenDateData(SrcRow)
+    elif 'INTEGER' == DataType[SrcDataType].name:
+        return GenIntegerData(SrcRow)
+    elif 'SMALLINT' == DataType[SrcDataType].name:
+        return GenSmallintData(SrcRow)
+    elif 'BIGINT' == DataType[SrcDataType].name:
+        return GenBigintData(SrcRow)
+    elif 'DECIMAL' == DataType[SrcDataType].name:
+        return GenDecimalData(SrcRow)
+    elif 'NUMERIC' == DataType[SrcDataType].name:
+        return GenNumericData(SrcRow)
+    elif 'FLOAT' == DataType[SrcDataType].name:
+        return GenFloatData(SrcRow)
+    elif 'TIMESTAMP' == DataType[SrcDataType].name:
+        return GenTimestampData(SrcRow)
+    elif 'TIME' == DataType[SrcDataType].name:
+        return GenTimeData(SrcRow)
+    elif 'BYTEINT' == DataType[SrcDataType].name:
+        return GenByteintData(SrcRow)     
 
 def GenByteintData(SrcRow)->list:
     #-128 to +127
