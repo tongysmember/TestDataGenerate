@@ -2,7 +2,7 @@
 echo 測試資料產生器
 echo ===============================================================
 
-set /p DdlPath=請輸入來源DDL路徑(DDL資料夾):
+set /p DdlPath=請輸入來源DDL檔案路徑(DDL資料夾當中檔案):
 echo %DdlPath%
 
 IF EXIST %DdlPath% (
