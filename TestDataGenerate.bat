@@ -1,27 +1,27 @@
 @echo off
-echo ���ո�Ʋ��;�
+echo 測試資料產生器
 echo ===============================================================
 
-set /p DdlPath=�п�J�ӷ�DDL���|(DDL��Ƨ�):
+set /p DdlPath=請輸入來源DDL路徑(DDL資料夾):
 echo %DdlPath%
 
 IF EXIST %DdlPath% (
-  echo �ɮצs�b
+  echo 檔案存在
 ) ELSE (
-  echo �ɮפ��s�b, �Э��s��J
+  echo 檔案不存在, 請重新輸入
 )
 
-set /p BoolHeader=�O�_�ݭn���YHeader(Y, N):
+set /p BoolHeader=是否需要表頭Header(Y, N):
 echo %BoolHeader%
 
-set /p BoolTailer=�O�_�ݭn����Tailer(Y, N):
+set /p BoolTailer=是否需要表尾Tailer(Y, N):
 echo %BoolTailer%
 
-set /p IntRows=��Ʋ��͵���(�����):
+set /p IntRows=資料產生筆數(正整數):
 echo %IntRows%
 
-echo ����{�� 
+echo 執行程式 
 
 py -3.8 TestDataGenerate.py %BoolHeader% %BoolTailer% %IntRows%
 
-pause
+pause 
