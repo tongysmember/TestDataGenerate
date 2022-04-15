@@ -22,6 +22,6 @@ echo %IntRows%
 
 echo 執行程式 
 
-py -3.8 TestDataGenerate.py %BoolHeader% %BoolTailer% %IntRows%
+py -3.8 TestDataGenerate.py %BoolHeader% %BoolTailer% %IntRows% %DdlPath%
 
 pause 
