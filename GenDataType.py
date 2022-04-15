@@ -78,7 +78,7 @@ def GenNumericData(SrcRow)->list:
         elif(int(IntLen) == int(FloatLen)):
             strRandomDecimal = '.'+ strRandomDecimal[int(FloatLen)*-1:]
 
-        SrcRow = [Row.replace('NUMERIC('+Decimallength+')', strRandomDecimal) for Row in SrcRow]
+        SrcRow = [Row.replace('NUMERIC('+Decimallength+')', strRandomDecimal,1) for Row in SrcRow]
 
     ConvertRow = SrcRow
     return ConvertRow 
@@ -133,7 +133,7 @@ def GenTimestampData(SrcRow)->list:
 def flatten(lis):
     ''' Multiple Dimension List Convert to 1-Dimension List '''
 
-     for item in lis:
+    for item in lis:
          if isinstance(item, Iterable) and not isinstance(item, str):
              for x in flatten(item):
                  yield x
