@@ -37,19 +37,19 @@ def GenDataType(SrcDataType,SrcRow):
 
 def GenByteintData(SrcRow)->list:
     #-128 to +127
-    return [Row.replace('BYTEINT', str(random.randint(0, +127))) for Row in SrcRow] 
+    return [Row.replace('BYTEINT', str(random.randint(0, +127)),1) for Row in SrcRow] 
 
 def GenSmallintData(SrcRow)->list:
     #-32768 ~ +32767
-    return [Row.replace('SMALLINT', str(random.randint(0 , +32767))) for Row in SrcRow] 
+    return [Row.replace('SMALLINT', str(random.randint(0 , +32767)),1) for Row in SrcRow] 
 
 def GenIntegerData(SrcRow)->list:
     #-2,147,483,648 ~ +2,147,483,647
-    return [Row.replace('INTEGER', str(random.randint(0, 2147483647))) for Row in SrcRow] 
+    return [Row.replace('INTEGER', str(random.randint(0, 2147483647)),1) for Row in SrcRow] 
 
 def GenBigintData(SrcRow)->list:
     #-9,233,372,036,854,775,808 to +9,233,372,036,854,775,807
-    return [Row.replace('BIGINT', str(random.randint(0 , +9233372036854775807))) for Row in SrcRow] 
+    return [Row.replace('BIGINT', str(random.randint(0 , +9233372036854775807)),1) for Row in SrcRow] 
 
 def GenDecimalData(SrcRow)->list:
     reg = re.compile(r'DECIMAL\((\d+\,\d+)')
@@ -59,7 +59,7 @@ def GenDecimalData(SrcRow)->list:
         IntLen, FloatLen = Decimallength.split(',')
         strRandomDecimal = str(random.randint(0,int('9' * int(IntLen))))
         strRandomDecimal = strRandomDecimal[:int(IntLen)*-1]+'.'+strRandomDecimal[int(FloatLen)*-1:]
-        SrcRow = [Row.replace('DECIMAL('+Decimallength+')', strRandomDecimal) for Row in SrcRow]
+        SrcRow = [Row.replace('DECIMAL('+Decimallength+')', strRandomDecimal,1) for Row in SrcRow]
 
     ConvertRow = SrcRow
     return ConvertRow 
@@ -77,30 +77,30 @@ def GenNumericData(SrcRow)->list:
             strRandomDecimal = strRandomDecimal[:(int(IntLen)-int(FloatLen))*1]
         elif(int(IntLen) == int(FloatLen)):
             strRandomDecimal = '.'+ strRandomDecimal[int(FloatLen)*-1:]
-
+            
         SrcRow = [Row.replace('NUMERIC('+Decimallength+')', strRandomDecimal,1) for Row in SrcRow]
 
     ConvertRow = SrcRow
     return ConvertRow 
 
+
 def GenFloatData(SrcRow)->list:
     # Teradata : https://docs.teradata.com/r/WurHmDcDf31smikPbo9Mcw/RhAF_5yskR0MQJyrFVcSxQ
     # Represent values in sign/magnitude form ranging from 2.226 x 10-308 to 1.797 x 10308.
 
-    return [Row.replace('FLOAT', str(random.uniform(0, +999.999))) for Row in SrcRow] 
+    return [Row.replace('FLOAT', str(random.uniform(0, +999.999)),1) for Row in SrcRow] 
 
 def GenCharData(SrcRow)->list:
     reg = re.compile(r'^CHAR\((\d+)', re.VERBOSE | re.IGNORECASE| re.MULTILINE | re.DOTALL)
     re_match = filter(reg.match, SrcRow)
     ConvertRow = SrcRow
 
-    for Varlength in re_match:
-        strRandomVarchar = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(int(Varlength.replace('CHAR(','').replace(')',''))))
-        
+    for Varlength in re_match:                
         index =0
         for Col in SrcRow:            
             if  'CHAR' in Col  and 'VARCHAR' not in Col:
-                ConvertRow[index] = Col.replace( Varlength , strRandomVarchar )
+                strRandomVarchar = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(int(Varlength.replace('CHAR(','').replace(')',''))))
+                ConvertRow[index] = Col.replace( Varlength , strRandomVarchar ,1)
                 index +=1
             else :
                 index +=1
@@ -115,7 +115,7 @@ def GenVarcharData(SrcRow)->list:
     for Varlength in re_match:
         strRandomVarchar = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(int(Varlength.replace('VARCHAR(','').replace(')',''))))
         
-    ConvertRow = list(map(lambda item: item.replace(Varlength,strRandomVarchar), ConvertRow))
+    ConvertRow = list(map(lambda item: item.replace(Varlength,strRandomVarchar,1), ConvertRow))
     return ConvertRow   
 
 def GenDateData(SrcRow)->list:
