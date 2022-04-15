@@ -64,21 +64,22 @@ def GenDecimalData(SrcRow)->list:
     ConvertRow = SrcRow
     return ConvertRow 
 
+def GenRandomNumeric(IntLen, FloatLen)->str:
+    strRandomDecimal = str(random.randint(0,int('9' * int(IntLen))))
+    if int(FloatLen) != 0:
+        return strRandomDecimal[:(int(IntLen)-int(FloatLen))*1]+'.'+strRandomDecimal[int(FloatLen)*-1:]
+    elif (int(FloatLen) == 0):
+        return strRandomDecimal[:(int(IntLen)-int(FloatLen))*1]
+    elif(int(IntLen) == int(FloatLen)):
+        return '.'+ strRandomDecimal[int(FloatLen)*-1:]
+
 def GenNumericData(SrcRow)->list:
     reg = re.compile(r'NUMERIC\((\d+\,\d+)')
     re_match = reg.findall(','.join(SrcRow))
     
     for Decimallength in re_match:
         IntLen, FloatLen = Decimallength.split(',')
-        strRandomDecimal = str(random.randint(0,int('9' * int(IntLen))))
-        if int(FloatLen) != 0:
-            strRandomDecimal = strRandomDecimal[:(int(IntLen)-int(FloatLen))*1]+'.'+strRandomDecimal[int(FloatLen)*-1:]
-        elif (int(FloatLen) == 0):
-            strRandomDecimal = strRandomDecimal[:(int(IntLen)-int(FloatLen))*1]
-        elif(int(IntLen) == int(FloatLen)):
-            strRandomDecimal = '.'+ strRandomDecimal[int(FloatLen)*-1:]
-            
-        SrcRow = [Row.replace('NUMERIC('+Decimallength+')', strRandomDecimal,1) for Row in SrcRow]
+        SrcRow = [Row.replace('NUMERIC('+Decimallength+')', GenRandomNumeric(IntLen, FloatLen),1) for Row in SrcRow]
 
     ConvertRow = SrcRow
     return ConvertRow 
