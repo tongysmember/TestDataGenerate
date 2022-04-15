@@ -23,6 +23,8 @@ global SpecHeaderRowTemplate
 global SpecExportRowTemplate
 
 def ReadDDL2SpecData()->list:
+    ''' Read DDL File and Generate Column Data '''
+
     #print('ReadSpec')
     global SpecDataRowTemplate
     global SpecHeaderRowTemplate
@@ -42,6 +44,8 @@ def ReadDDL2SpecData()->list:
             SpecExportRowTemplate.append(Col[0])
     
 def DDLcontextRegex(SrcDDLcontents)->list:
+    ''' Regex DDL to Extract Column Data, Create Header & Context '''
+
     re_script = r"""\s* (?P<column_name>\w+)\s+ (?P<column_type>\w+) (?:     \(     (?P<column_size>[^()]+)     \) )? [, \n ) ] """
     DataTypeList = [EnumRow.name for EnumRow in DataType]
     # DataTypeList Upper Type
@@ -57,13 +61,9 @@ def DDLcontextRegex(SrcDDLcontents)->list:
     
     return DDL_Header,DDL_Context
 
-def GenDatatable():
-    global ExportContext
-    ExportContext = []
-    for _ in range(ExportFileRows):
-        ExportContext.append(SpecDataRowTemplate)
-
 def GenDataContextBySpec():
+    ''' Generated Row Data By Column Context '''
+
     global ExportContext
     global SpecExportRowTemplate
     SpecExportRowTemplate = [col.replace(' ','') for col in SpecExportRowTemplate] ## 去除空白字串
@@ -82,6 +82,8 @@ def GenDataContextBySpec():
     ExportContext = ExportContextGenData
 
 def ExportFile():
+    ''' Create CSV Data File to Spec Path '''
+
     print('輸出資料中')
     global ExportContext
     global SpecHeaderRowTemplate
@@ -100,6 +102,8 @@ def ExportFile():
     print('輸出檔案 : '+ExportPath + ExportFileName)
 
 def ExportFileSetting():
+    ''' Checking Argv Parameter '''
+    
     try:
         global BoolExportHeaderRow
         global BoolExportCountRow 
@@ -132,6 +136,8 @@ def ExportFileSetting():
         sys.exit()
 
 def LoggingSetting():
+    ''' Set Loggin Format '''
+
     FileName, FileFormat = datetime.datetime.now().strftime("%Y%m%d"),'.log'
     logging.basicConfig(filename=LogPath+FileName+FileFormat,
                             filemode='a',
