@@ -37,22 +37,18 @@ def GenDataType(SrcDataType,SrcRow):
 
 def GenByteintData(SrcRow)->list:
     #-128 to +127
-    #return [Row.replace('BYTEINT', str(random.randint(-128, +127))) for Row in SrcRow] 
     return [Row.replace('BYTEINT', str(random.randint(0, +127))) for Row in SrcRow] 
 
 def GenSmallintData(SrcRow)->list:
     #-32768 ~ +32767
-    #return [Row.replace('SMALLINT', str(random.randint(-32768 , +32767))) for Row in SrcRow] 
     return [Row.replace('SMALLINT', str(random.randint(0 , +32767))) for Row in SrcRow] 
 
 def GenIntegerData(SrcRow)->list:
     #-2,147,483,648 ~ +2,147,483,647
-    #return [Row.replace('INTEGER', str(random.randint(-2147483648, 2147483647))) for Row in SrcRow] 
     return [Row.replace('INTEGER', str(random.randint(0, 2147483647))) for Row in SrcRow] 
 
 def GenBigintData(SrcRow)->list:
     #-9,233,372,036,854,775,808 to +9,233,372,036,854,775,807
-    #return [Row.replace('BIGINT', str(random.randint(-9233372036854775808 , +9233372036854775807))) for Row in SrcRow] 
     return [Row.replace('BIGINT', str(random.randint(0 , +9233372036854775807))) for Row in SrcRow] 
 
 def GenDecimalData(SrcRow)->list:
@@ -91,7 +87,6 @@ def GenFloatData(SrcRow)->list:
     # Teradata : https://docs.teradata.com/r/WurHmDcDf31smikPbo9Mcw/RhAF_5yskR0MQJyrFVcSxQ
     # Represent values in sign/magnitude form ranging from 2.226 x 10-308 to 1.797 x 10308.
 
-    #return [Row.replace('FLOAT', str(random.uniform(-999.999, +999.999))) for Row in SrcRow] 
     return [Row.replace('FLOAT', str(random.uniform(0, +999.999))) for Row in SrcRow] 
 
 def GenCharData(SrcRow)->list:
@@ -103,9 +98,9 @@ def GenCharData(SrcRow)->list:
         strRandomVarchar = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(int(Varlength.replace('CHAR(','').replace(')',''))))
         
         index =0
-        for Row in SrcRow:            
-            if  'CHAR' in Row  and 'VARCHAR' not in Row:
-                ConvertRow[index] = Row.replace( Varlength , strRandomVarchar )
+        for Col in SrcRow:            
+            if  'CHAR' in Col  and 'VARCHAR' not in Col:
+                ConvertRow[index] = Col.replace( Varlength , strRandomVarchar )
                 index +=1
             else :
                 index +=1
@@ -136,6 +131,8 @@ def GenTimestampData(SrcRow)->list:
     return list(map(lambda x: str.replace(x, "TIMESTAMP", str((datetime.datetime.now()+ datetime.timedelta(days=int(random.choice(string.digits)))).strftime("%Y%m%d%H%M%S")+'.'+random.choice(string.digits)*6)), SrcRow))
 
 def flatten(lis):
+    ''' Multiple Dimension List Convert to 1-Dimension List '''
+
      for item in lis:
          if isinstance(item, Iterable) and not isinstance(item, str):
              for x in flatten(item):
