@@ -15,11 +15,6 @@ import os.path
 
 ExportPath   = './Generated/'
 LogPath      = './Log/'
-#DDLPath     = './DDL/Teradata.DDL'
-#DDLPath     = './DDL/ACPBCOSMT.txt'
-#DDLPath     = './DDL/ACPBCOSQT.txt'
-#DDLPath     = './DDL/ACPBCOSYT.txt'
-#ExportFileName = datetime.datetime.now().strftime("%Y%m%d%H%M%S")+'.csv'
 
 global ExportContext
 global ExportFileRows
@@ -40,11 +35,11 @@ def ReadDDL2SpecData()->list:
     SpecHeaderRowTemplate, SpecDataRowTemplate = DDLcontextRegex(DDLcontents)
     
     SpecExportRowTemplate =  []
-    for row in SpecDataRowTemplate:
-        if (row[1] != ''):
-            SpecExportRowTemplate.append(row[0]+'('+row[1]+')')
+    for Col in SpecDataRowTemplate:
+        if (Col[1] != ''):
+            SpecExportRowTemplate.append(Col[0]+'('+Col[1]+')')
         else:
-            SpecExportRowTemplate.append(row[0])
+            SpecExportRowTemplate.append(Col[0])
     
 def DDLcontextRegex(SrcDDLcontents)->list:
     re_script = r"""\s* (?P<column_name>\w+)\s+ (?P<column_type>\w+) (?:     \(     (?P<column_size>[^()]+)     \) )? [, \n ) ] """
@@ -57,28 +52,23 @@ def DDLcontextRegex(SrcDDLcontents)->list:
     DDL_Header =[]
     for ColName, ColType, ColLength in re_match:
         if ColType in DataTypeList:
-            #print('{0},{1},{2}'.format(ColName, ColType, ColLength))
             DDL_Context.append([ColType, ColLength])
             DDL_Header.append([ColName])
     
     return DDL_Header,DDL_Context
 
 def GenDatatable():
-    #print('GenDatatable')
     global ExportContext
     ExportContext = []
     for _ in range(ExportFileRows):
         ExportContext.append(SpecDataRowTemplate)
 
 def GenDataContextBySpec():
-    #print('GenDataContextByDDL')
     global ExportContext
     global SpecExportRowTemplate
     SpecExportRowTemplate = [col.replace(' ','') for col in SpecExportRowTemplate] ## 去除空白字串
     SpecExportRowRandom = SpecExportRowTemplate
     ExportContextGenData = []    
-
-    #GenDataObj = GenDataType()
     
     for _ in range(ExportFileRows):
         for Col in SpecExportRowTemplate:
