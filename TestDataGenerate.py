@@ -7,8 +7,8 @@ import os, os.path
 import datetime
 import re
 from decimal import *
-
 import GenDataType
+from DataSecret import DataSecretClass
 from DataTypeEnum import DataType
 import logging
 import os.path
@@ -31,8 +31,7 @@ def ReadDDL2SpecData()->list:
     global SpecExportRowTemplate
 
     DDLcontents = None
-    #with open(sys.argv[4]) as f:
-    with open(GenDataType.CheckSecurityInput(sys.argv[4])) as f:
+    with open(DataSecretClass.CheckSecurityInput(sys.argv[4])) as f:
         DDLcontents = f.read().upper() #正規化
     
     SpecHeaderRowTemplate, SpecDataRowTemplate = DDLcontextRegex(DDLcontents)

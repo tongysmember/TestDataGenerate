@@ -38,18 +38,6 @@ def GenDataType(SrcDataType,SrcRow):
     elif 'BYTEINT' == DataType[SrcDataType].name:
         return GenByteintData(SrcRow)     
 
-def CheckSecurityInput(SrcInput:string):
-    BlackList = ["--", ";--", ";", "/*", "*/", "@@", 
-                 "@", "CHAR", "NCHAR", "VARCHAR", "NVARCHAR", "ALTER", 
-                 "BEGIN", "CAST", "CREATE", "CURSOR", "DECLARE", "DELETE", 
-                 "DROP", "END", "EXEC", "EXECUTE", "FETCH", "INSERT", 
-                 "KILL", "OPEN", "SELECT", "SYS", "SYSOBJECTS", "SYSCOLUMNS", 
-                 "TABLE", "UPDATE", "UPDATE.TXT"]
-    if SrcInput.upper() in BlackList : 
-        print('程式帶入資料路徑異常, 請再修正 : '+SrcInput)
-        sys.exit() 
-    return SrcInput
-
 def GenSecretRamdonDigitData(start:int, end:int)->str:
     return str(secrets.SystemRandom().randrange(start, end, 1))
 
