@@ -6,6 +6,7 @@ import datetime
 import string
 import random
 import secrets
+import sys
 
 from collections.abc import Iterable
 import re
@@ -37,6 +38,18 @@ def GenDataType(SrcDataType,SrcRow):
     elif 'BYTEINT' == DataType[SrcDataType].name:
         return GenByteintData(SrcRow)     
 
+def CheckSecurityInput(SrcInput:string):
+    BlackList = ["--", ";--", ";", "/*", "*/", "@@", 
+                 "@", "CHAR", "NCHAR", "VARCHAR", "NVARCHAR", "ALTER", 
+                 "BEGIN", "CAST", "CREATE", "CURSOR", "DECLARE", "DELETE", 
+                 "DROP", "END", "EXEC", "EXECUTE", "FETCH", "INSERT", 
+                 "KILL", "OPEN", "SELECT", "SYS", "SYSOBJECTS", "SYSCOLUMNS", 
+                 "TABLE", "UPDATE", "UPDATE.TXT"]
+    if SrcInput.upper() in BlackList : 
+        print('程式帶入資料路徑異常, 請再修正 : '+SrcInput)
+        sys.exit() 
+    return SrcInput
+
 def GenSecretRamdonDigitData(start:int, end:int)->str:
     return str(secrets.SystemRandom().randrange(start, end, 1))
 
@@ -46,32 +59,30 @@ def GenSecretRamdonTextData(length:int)->str:
 
 def GenByteintData(SrcRow)->list:
     #-128 to +127
-    return [Row.replace('BYTEINT', GenSecretRamdonDigitData(0, 127), 1) for Row in SrcRow] 
+    return [Row.replace('^BYTEINT$', GenSecretRamdonDigitData(0, 127), 1) for Row in SrcRow] 
 
 def GenSmallintData(SrcRow)->list:
     #-32768 ~ +32767
-    return [Row.replace('SMALLINT', GenSecretRamdonDigitData(0, +32767), 1) for Row in SrcRow] 
+    return [Row.replace('^SMALLINT$', GenSecretRamdonDigitData(0, +32767), 1) for Row in SrcRow] 
 
 
 def GenIntegerData(SrcRow)->list:
     #-2,147,483,648 ~ +2,147,483,647
-    return [Row.replace('INTEGER', GenSecretRamdonDigitData(0, +2147483647), 1) for Row in SrcRow] 
+    return [Row.replace('^INTEGER$', GenSecretRamdonDigitData(0, +2147483647), 1) for Row in SrcRow] 
 
 
 def GenBigintData(SrcRow)->list:
     #-9,233,372,036,854,775,808 to +9,233,372,036,854,775,807
-    return [Row.replace('BIGINT', GenSecretRamdonDigitData(0, +9233372036854775807), 1) for Row in SrcRow] 
+    return [Row.replace('^BIGINT$', GenSecretRamdonDigitData(0, +9233372036854775807), 1) for Row in SrcRow] 
 
 
 def GenDecimalData(SrcRow)->list:
-    reg = re.compile(r'DECIMAL\((\d+\,\d+)')
+    reg = re.compile(r'\^DECIMAL\$\((\d+\,\d+)')
     re_match = reg.findall(','.join(SrcRow))
     
     for Decimallength in re_match:
         IntLen, FloatLen = Decimallength.split(',')
-        strRandomDecimal = GenSecretRamdonDigitData(0,int('9' * int(IntLen)))
-        strRandomDecimal = strRandomDecimal[:int(IntLen)*-1]+'.'+strRandomDecimal[int(FloatLen)*-1:]
-        SrcRow = [Row.replace('DECIMAL('+Decimallength+')', strRandomDecimal,1) for Row in SrcRow]
+        SrcRow = [Row.replace('^DECIMAL$('+Decimallength+')', GenRandomNumeric(IntLen, FloatLen),1) for Row in SrcRow]
 
     ConvertRow = SrcRow
     return ConvertRow 
@@ -86,12 +97,12 @@ def GenRandomNumeric(IntLen, FloatLen)->str:
         return '.'+ strRandomDecimal[int(FloatLen)*-1:]
 
 def GenNumericData(SrcRow)->list:
-    reg = re.compile(r'NUMERIC\((\d+\,\d+)')
+    reg = re.compile(r'\^NUMERIC\$\((\d+\,\d+)')
     re_match = reg.findall(','.join(SrcRow))
     
     for Decimallength in re_match:
         IntLen, FloatLen = Decimallength.split(',')
-        SrcRow = [Row.replace('NUMERIC('+Decimallength+')', GenRandomNumeric(IntLen, FloatLen),1) for Row in SrcRow]
+        SrcRow = [Row.replace('^NUMERIC$('+Decimallength+')', GenRandomNumeric(IntLen, FloatLen),1) for Row in SrcRow]
 
     ConvertRow = SrcRow
     return ConvertRow 
@@ -101,48 +112,42 @@ def GenFloatData(SrcRow)->list:
     # Teradata : https://docs.teradata.com/r/WurHmDcDf31smikPbo9Mcw/RhAF_5yskR0MQJyrFVcSxQ
     # Represent values in sign/magnitude form ranging from 2.226 x 10-308 to 1.797 x 10308.
 
-    return [Row.replace('FLOAT', str(random.uniform(0, +999.999)),1) for Row in SrcRow] 
+    return [Row.replace('^FLOAT$', GenRandomNumeric(6, 3),1) for Row in SrcRow]
 
 def GenCharData(SrcRow)->list:
-    reg = re.compile(r'^CHAR\((\d+)', re.VERBOSE | re.IGNORECASE| re.MULTILINE | re.DOTALL)
+    reg = re.compile(r'\^CHAR\$\((\d+)', re.VERBOSE | re.IGNORECASE| re.MULTILINE | re.DOTALL)
     re_match = filter(reg.match, SrcRow)
     ConvertRow = SrcRow
 
-    for Varlength in re_match:                
-        index =0
-        for Col in SrcRow:            
-            if  'CHAR' in Col  and 'VARCHAR' not in Col:
-                strRandomVarchar = ''.join(GenSecretRamdonTextData(1) for _ in range(int(Varlength.replace('CHAR(','').replace(')',''))))
-                ConvertRow[index] = Col.replace( Varlength , strRandomVarchar ,1)
-                index +=1
-            else :
-                index +=1
-                continue
+    for Varlength in re_match:
+        strRandomVarchar = ''.join(GenSecretRamdonTextData(1) for _ in range(int(Varlength.replace('^CHAR$(','').replace(')',''))))
+        ConvertRow = list(map(lambda item: item.replace(Varlength,strRandomVarchar,1), ConvertRow))            
+
     return ConvertRow   
 
 def GenVarcharData(SrcRow)->list:
-    reg = re.compile(r'^VARCHAR\((\d+)', re.VERBOSE | re.IGNORECASE| re.MULTILINE | re.DOTALL)
+    reg = re.compile(r'\^VARCHAR\$\((\d+)', re.VERBOSE | re.IGNORECASE| re.MULTILINE | re.DOTALL)
     re_match = filter(reg.match, SrcRow)
     ConvertRow = SrcRow
     
     for Varlength in re_match:
-        strRandomVarchar = ''.join(GenSecretRamdonTextData(1) for _ in range(int(Varlength.replace('VARCHAR(','').replace(')',''))))
-        
-    ConvertRow = list(map(lambda item: item.replace(Varlength,strRandomVarchar,1), ConvertRow))
+        strRandomVarchar = ''.join(GenSecretRamdonTextData(1) for _ in range(int(Varlength.replace('^VARCHAR$(','').replace(')',''))))
+        ConvertRow = list(map(lambda item: item.replace(Varlength,strRandomVarchar,1), ConvertRow))
+    
     return ConvertRow   
 
 def GenDateData(SrcRow)->list:
     #"%H%M%S"
-    return list(map(lambda x: str.replace(x, "DATE", str((datetime.datetime.now()+ datetime.timedelta(days=int(GenSecretRamdonDigitData(-10, 10)))).strftime("%Y%m%d")),1), SrcRow))
+    return list(map(lambda x: str.replace(x, "^DATE$", str((datetime.datetime.now()+ datetime.timedelta(days=int(GenSecretRamdonDigitData(-10, 10)))).strftime("%Y%m%d")),1), SrcRow))
    
 def GenTimeData(SrcRow)->list:
     #HHMMSS.nnnnnn
-    return list(map(lambda x: str.replace(x, "TIME", str((datetime.datetime.now()+ datetime.timedelta(hours=int(GenSecretRamdonDigitData(-10, 10)))).strftime("%H%M%S")+'.'+GenSecretRamdonDigitData(0, 9)*6),1), SrcRow))
+    return list(map(lambda x: str.replace(x, "^TIME$", str((datetime.datetime.now()+ datetime.timedelta(hours=int(GenSecretRamdonDigitData(-100, 100)))).strftime("%H%M%S")+'.'+GenSecretRamdonDigitData(0, 9)*6),1), SrcRow))
 
 
 def GenTimestampData(SrcRow)->list:
     #YYMMDDHHMMSS.nnnnnn
-    return list(map(lambda x: str.replace(x, "TIMESTAMP", str((datetime.datetime.now()+ datetime.timedelta(hours=int(GenSecretRamdonDigitData(-10, 10)))).strftime("%Y%m%d%H%M%S")+'.'+GenSecretRamdonDigitData(0, 9)*6),1), SrcRow))
+    return list(map(lambda x: str.replace(x, "^TIMESTAMP$", str((datetime.datetime.now()+ datetime.timedelta(hours=int(GenSecretRamdonDigitData(-100, 100)))).strftime("%Y%m%d%H%M%S")+'.'+GenSecretRamdonDigitData(0, 9)*6),1), SrcRow))
 
 def flatten(lis):
     ''' Multiple Dimension List Convert to 1-Dimension List '''

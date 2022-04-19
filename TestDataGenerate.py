@@ -31,7 +31,8 @@ def ReadDDL2SpecData()->list:
     global SpecExportRowTemplate
 
     DDLcontents = None
-    with open(sys.argv[4]) as f:
+    #with open(sys.argv[4]) as f:
+    with open(GenDataType.CheckSecurityInput(sys.argv[4])) as f:
         DDLcontents = f.read().upper() #正規化
     
     SpecHeaderRowTemplate, SpecDataRowTemplate = DDLcontextRegex(DDLcontents)
@@ -56,7 +57,7 @@ def DDLcontextRegex(SrcDDLcontents)->list:
     DDL_Header =[]
     for ColName, ColType, ColLength in re_match:
         if ColType in DataTypeList:
-            DDL_Context.append([ColType, ColLength])
+            DDL_Context.append(['^'+ColType+'$', ColLength])
             DDL_Header.append([ColName])
     
     return DDL_Header,DDL_Context
@@ -72,7 +73,7 @@ def GenDataContextBySpec():
     
     for _ in range(ExportFileRows):
         for Col in SpecExportRowTemplate:
-            SpecExportRowRandom = GenDataType.GenDataType(Col.split('(')[0],SpecExportRowRandom)
+            SpecExportRowRandom = GenDataType.GenDataType(Col.split('$')[0].replace('^',''),SpecExportRowRandom)
 
         ExportContextGenData.append(SpecExportRowRandom)
         SpecExportRowRandom = SpecExportRowTemplate
@@ -163,4 +164,5 @@ if __name__=='__main__':
         ExportFile()
 
     except Exception as e:
+        print(e)
         logging.error(e)
