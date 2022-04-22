@@ -112,7 +112,7 @@ def GenCharData(SrcRow)->list:
     ConvertRow = SrcRow
 
     for Varlength in re_match:
-        strRandomVarchar = ''.join(GenSecretRamdonTextData(1) for _ in range(int(Varlength.replace('^CHAR$(','').replace(')',''))))
+        strRandomVarchar = GenSecretRamdonTextData(int(Varlength.replace('^CHAR$(','').replace(')','')))
         ConvertRow = list(map(lambda item: item.replace(Varlength,strRandomVarchar,1), ConvertRow))            
 
     return ConvertRow   
@@ -123,7 +123,7 @@ def GenVarcharData(SrcRow)->list:
     ConvertRow = SrcRow
     
     for Varlength in re_match:
-        strRandomVarchar = ''.join(GenSecretRamdonTextData(1) for _ in range(int(Varlength.replace('^VARCHAR$(','').replace(')',''))))
+        strRandomVarchar = GenSecretRamdonTextData(int(Varlength.replace('^VARCHAR$(','').replace(')','')))
         ConvertRow = list(map(lambda item: item.replace(Varlength,strRandomVarchar,1), ConvertRow))
     
     return ConvertRow   
