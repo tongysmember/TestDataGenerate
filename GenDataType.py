@@ -13,6 +13,8 @@ import re
 from DataTypeEnum import DataType
 
 def GenDataType(SrcDataType,SrcRow):
+    ''' Choice Random Data Method by DataType '''
+
     if  'VARCHAR' == DataType[SrcDataType].name:
         return GenVarcharData(SrcRow)
     elif 'CHAR' == DataType[SrcDataType].name:
@@ -39,9 +41,11 @@ def GenDataType(SrcDataType,SrcRow):
         return GenByteintData(SrcRow)     
 
 def GenSecretRamdonDigitData(start:int, end:int)->str:
+    ''' 產生加密亂數(數值), 輸入初始值與結束值範圍 '''
     return str(secrets.SystemRandom().randrange(start, end, 1))
 
 def GenSecretRamdonTextData(length:int)->str:
+    ''' 產生加密亂數(文字), 輸入產生文字長度 '''
     rndList = list(string.ascii_uppercase+string.digits)
     return "".join(secrets.SystemRandom().sample(rndList,length))
 
