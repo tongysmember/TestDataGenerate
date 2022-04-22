@@ -136,7 +136,7 @@ def ExportFileSetting():
         sys.exit()
 
 def LoggingSetting():
-    ''' Set Loggin Format '''
+    ''' Set Log String Format '''
 
     FileName, FileFormat = datetime.datetime.now().strftime("%Y%m%d"),'.log'
     logging.basicConfig(filename=LogPath+FileName+FileFormat,
