@@ -1,6 +1,14 @@
 # TestDataGenerate 測資產生程式
 
-## 資料欄位參考
+## 程式運行
+python3 TestDataGenerate.py %BoolHeader% %BoolTailer% %IntRows% %DdlPath%
+
+%BoolHeader% => 是否輸出表頭 
+%BoolTailer% => 是否輸出表尾(顯示筆數)
+%IntRows% => 總行數
+%DdlPath% => 參考 DDL規格 檔案
+
+## DDL 資料欄位參考
 
 https://www.tutorialspoint.com/teradata/teradata_data_types.htm
 
@@ -20,25 +28,16 @@ https://www.tutorialspoint.com/teradata/teradata_data_types.htm
 | TIMESTAMP  | 10 or 12       | YYMMDDHHMMSS.nnnnnn or YYMMDDHHMMSS.nnnnnn +HHMM           |
 
 
+---
+Todo: 
+
+1. Add Setting.cfg => Data Type Uppper/Lower Bound
+2. DDL Column 數量檢查
+3. Main.py and Classes Folder
+4. Fix Length d
 
 ---
 
-# Git Comment Type
-- Added ( 新加入的需求 )
-- Fixed ( 修复 bug )
-- Changed ( 完成的任务 )
-- Updated ( 完成的任务，或者由于第三方模块变化而做的变化 )
-- feat: 新增/修改功能 (feature)。
-- fix: 修補 bug (bug fix)。
-- docs: 文件 (documentation)。
-- style: 格式 (不影響程式碼運行的變動 white-space, formatting, missing semi colons, etc)。
-- refactor: 重構 (既不是新增功能，也不是修補 bug 的程式碼變動)。
-- perf: 改善效能 (A code change that improves performance)。
-- test: 增加測試 (when adding missing tests)。
-- chore: 建構程序或輔助工具的變動 (maintain)。
-- revert: 撤銷回覆先前的 commit 例如：revert: type(scope): subject (回覆版本：xxxx)。
-
----
 
 # Ref:
 ## Regex DDL Script
